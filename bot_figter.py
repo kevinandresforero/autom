@@ -7,6 +7,23 @@ import random
 
 # --- CARGAR CONFIGURACIÓN DESDE TXT ---
 def cargar_configuracion(archivo):
+    """
+    Carga la configuración del bot desde un archivo de texto.
+    
+    Lee un archivo de configuración línea por línea, parseando pares clave=valor.
+    Detecta automáticamente valores hexadecimales, enteros, flotantes y strings.
+    Ignora líneas vacías y comentarios que empiecen con #.
+    
+    Args:
+        archivo (str): Ruta al archivo de configuración
+        
+    Returns:
+        dict: Diccionario con las configuraciones parseadas
+        
+    Example:
+        config = cargar_configuracion("config.txt")
+        hp_offset = config["OFFSET_HP"]  # 0x20224CB8
+    """
     config = {}
     with open(archivo, 'r') as f:
         for linea in f:
@@ -74,6 +91,21 @@ ultimo_dano_recibido = time.time()  # Nueva variable para el timer de 6 segundos
 
 # --- CONEXIÓN A MEMORIA ---
 def esperar_proceso(nombre_proceso):
+    """
+    Espera a que el proceso del juego esté disponible y se conecta a él.
+    
+    Intenta conectarse continuamente al proceso hasta que tenga éxito.
+    Útil para iniciar el bot antes que el juego o para reconexión automática.
+    
+    Args:
+        nombre_proceso (str): Nombre del ejecutable del proceso (ej: "DboClient.exe")
+        
+    Returns:
+        Pymem: Objeto Pymem conectado al proceso
+        
+    Example:
+        pm = esperar_proceso("DboClient.exe")
+    """
     while True:
         try:
             pm = Pymem(nombre_proceso)
@@ -91,16 +123,63 @@ base_addr = base_module.lpBaseOfDll
 # --- FUNCIONES ---
 
 def presionar_tecla(tecla):
+    """
+    Simula la pulsación de una tecla con delay opcional.
+    
+    Presiona y suelta una tecla. Incluye un delay de 0.2s para todas las teclas
+    excepto 'v' (recolección) que debe ser más rápida.
+    
+    Args:
+        tecla (str): Tecla a presionar (ej: "1", "f1", "space")
+        
+    Returns:
+        None
+        
+    Example:
+        presionar_tecla("1")  # Presiona la tecla 1
+        presionar_tecla("f1")  # Presiona F1
+    """
     if tecla != 'v':
         time.sleep(0.2)
     pyautogui.press(tecla)
 
 def mantener_tecla(tecla):
+    """
+    Mantiene una tecla presionada por medio segundo.
+    
+    Presiona una tecla, la mantiene por 0.5 segundos y luego la suelta.
+    Útil para movimiento continuo o acciones que requieren presión sostenida.
+    
+    Args:
+        tecla (str): Tecla a mantener presionada
+        
+    Returns:
+        None
+        
+    Example:
+        mantener_tecla("w")  # Mantiene W presionado por 0.5s
+    """
     pyautogui.keyDown(tecla)
     time.sleep(0.5)
     pyautogui.keyUp(tecla)
 
 def leer_hp_mp():
+    """
+    Lee los valores actuales de HP y MP desde la memoria del juego.
+    
+    Accede directamente a las direcciones de memoria donde el juego almacena
+    los valores de vida y maná del personaje.
+    
+    Args:
+        None
+        
+    Returns:
+        tuple: (hp_actual, mp_actual) como enteros
+        
+    Example:
+        hp, mp = leer_hp_mp()
+        print(f"HP: {hp}, MP: {mp}")
+    """
     hp = pm.read_int(OFFSET_HP)
     mp = pm.read_int(OFFSET_MP)
     return hp, mp
@@ -109,6 +188,22 @@ max_hp = 0
 max_mp = 0
 
 def actualizar_maximos(hp_actual, mp_actual):
+    """
+    Actualiza los valores máximos registrados de HP y MP.
+    
+    Mantiene registro de los valores más altos de HP y MP observados.
+    Esto permite calcular porcentajes precisos para el uso de pociones.
+    
+    Args:
+        hp_actual (int): Valor actual de HP
+        mp_actual (int): Valor actual de MP
+        
+    Returns:
+        None
+        
+    Example:
+        actualizar_maximos(1500, 800)  # Actualiza máximos si son mayores
+    """
     global max_hp, max_mp
     if hp_actual > max_hp:
         max_hp = hp_actual
@@ -118,6 +213,24 @@ def actualizar_maximos(hp_actual, mp_actual):
         print(f"[+] Nuevo MP máximo registrado: {max_mp}")
 
 def usar_pociones(hp_actual, mp_actual):
+    """
+    Usa pociones automáticamente basado en umbrales de HP/MP.
+    
+    Calcula los porcentajes de HP y MP y usa pociones si caen por debajo del 45%.
+    Actualiza el timer de HP bajo para pausar combate temporalmente.
+    
+    Args:
+        hp_actual (int): Valor actual de HP
+        mp_actual (int): Valor actual de MP
+        
+    Returns:
+        bool: True si se usó alguna poción, False en caso contrario
+        
+    Example:
+        pocion_usada = usar_pociones(500, 200)
+        if pocion_usada:
+            print("Se usó una poción")
+    """
     global max_hp, max_mp, ultimo_hp_bajo
 
     if max_hp == 0 or max_mp == 0:
@@ -145,6 +258,21 @@ def usar_pociones(hp_actual, mp_actual):
     return pocion_usada
 
 def lanzar_buff():
+    """
+    Lanza todos los buffs configurados en secuencia.
+    
+    Aplica buffs usando Alt+1, Alt+2, etc. según NUM_BUFS configurado.
+    Solo ejecuta si ha pasado el intervalo configurado desde el último uso.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Example:
+        lanzar_buff()  # Lanza buffs si es momento
+    """
     global ultimo_buff
     if time.time() - ultimo_buff >= BUFF_INTERVAL * 60:
         print("[*] Lanzando buffs...")
@@ -159,6 +287,24 @@ def lanzar_buff():
         time.sleep(1)
 
 def usar_habilidad(tecla, cooldown, ultimo_uso_ref, duracion):
+    """
+    Usa una habilidad si está disponible (cooldown cumplido).
+    
+    Verifica que haya pasado suficiente tiempo desde el último uso y desde
+    la última habilidad usada. Incluye animación y regreso al autoataque.
+    
+    Args:
+        tecla (str): Tecla de la habilidad a usar
+        cooldown (float): Tiempo de enfriamiento en segundos
+        ultimo_uso_ref (float): Timestamp del último uso de esta habilidad
+        duracion (float): Duración de la animación en segundos
+        
+    Returns:
+        float: Nuevo timestamp si se usó la habilidad, o el original si no
+        
+    Example:
+        ultimo_hab1 = usar_habilidad("1", 12.0, ultimo_hab1, 3.0)
+    """
     global ultimo_uso_habilidad
     if time.time() - ultimo_uso_ref >= cooldown and time.time() - ultimo_uso_habilidad >= duracion:
         print(f"[+] Usando habilidad {tecla}")
@@ -170,6 +316,21 @@ def usar_habilidad(tecla, cooldown, ultimo_uso_ref, duracion):
     return ultimo_uso_ref
 
 def usar_debuff():
+    """
+    Usa la habilidad de debuff si está disponible.
+    
+    Aplica debuff al enemigo respetando cooldown y tiempo desde última habilidad.
+    Actualiza los timers globales de uso de habilidades.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Example:
+        usar_debuff()  # Usa debuff si está disponible
+    """
     global ultimo_uso_debuff, ultimo_uso_habilidad
     if time.time() - ultimo_uso_debuff >= COOLDOWN_DEBUFF and time.time() - ultimo_uso_habilidad >= USO_DEBUFF:
         print("[+] Usando Debuff")
@@ -179,6 +340,22 @@ def usar_debuff():
         time.sleep(USO_DEBUFF)
 
 def combate(hp_actual):
+    """
+    Ejecuta la rutina principal de combate.
+    
+    Busca enemigos, se acerca con dash, autoataca y usa habilidades en rotación.
+    Incluye pausa temporal si el HP está en recuperación tras usar poción.
+    
+    Args:
+        hp_actual (int): Valor actual de HP del personaje
+        
+    Returns:
+        None
+        
+    Example:
+        hp, _ = leer_hp_mp()
+        combate(hp)
+    """
     presionar_tecla('f')
     global ultimo_uso_hab1, ultimo_uso_hab2, ultimo_uso_hab3, ultimo_hp_bajo
 
@@ -209,6 +386,21 @@ def combate(hp_actual):
     usar_debuff()
 
 def recoger():
+    """
+    Realiza recolección de objetos mientras se mueve en círculo.
+    
+    Se mueve hacia adelante en dirección aleatoria mientras mantiene
+    presionada la tecla de recolección por 4 segundos.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Example:
+        recoger()  # Inicia recolección en movimiento
+    """
     print("[*] Caminando en círculo hacia adelante y recogiendo objetos (4 segundos)...")
     pyautogui.keyDown('w')
     pyautogui.keyDown(TECLA_OBJETO)
@@ -221,6 +413,21 @@ def recoger():
     print("[+] Recolección en movimiento terminada.")
 
 def dash():
+    """
+    Ejecuta una secuencia de dash para moverse rápidamente.
+    
+    Realiza una combinación de salto y movimiento para acercarse
+    rápidamente al enemigo. Incluye orientación hacia el objetivo.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Example:
+        dash()  # Ejecuta dash hacia el enemigo
+    """
     pyautogui.keyDown('space')
     pyautogui.keyUp('space')
     pyautogui.keyDown('w')
@@ -231,6 +438,21 @@ def dash():
     pyautogui.keyUp('f')
 
 def patrullar():
+    """
+    Ejecuta rutina de patrullaje para buscar enemigos.
+    
+    Se mueve a diferentes zonas, busca enemigos, aplica buffs si es necesario
+    y realiza combate breve. Incluye movimiento aleatorio.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Example:
+        patrullar()  # Inicia rutina de patrullaje
+    """
     global ultimo_buff
     print("[*] Moviéndose a otra zona...")
     pyautogui.keyDown('w')
@@ -264,7 +486,21 @@ def patrullar():
 # ----- Hilos -----
 
 def mantener_recoleccion():
-    """Hilo que mantiene la recolección de objetos SIEMPRE activa"""
+    """
+    Hilo que mantiene la recolección de objetos siempre activa.
+    
+    Ejecuta en hilo separado para mantener la tecla de recolección presionada
+    continuamente, excepto durante el uso de habilidades con animación.
+    
+    Args:
+        None
+        
+    Returns:
+        None (función de hilo, ejecuta indefinidamente)
+        
+    Example:
+        threading.Thread(target=mantener_recoleccion, daemon=True).start()
+    """
     print("[+] 🔄 Hilo de recolección iniciado - SIEMPRE ACTIVO")
     
     while True:
@@ -281,6 +517,21 @@ def mantener_recoleccion():
             time.sleep(1)
 
 def verificar_pociones():
+    """
+    Hilo que monitorea HP/MP y usa pociones automáticamente.
+    
+    Verifica constantemente los valores de HP y MP, actualiza máximos registrados,
+    detecta daño recibido y usa pociones cuando es necesario.
+    
+    Args:
+        None
+        
+    Returns:
+        None (función de hilo, ejecuta indefinidamente)
+        
+    Example:
+        threading.Thread(target=verificar_pociones, daemon=True).start()
+    """
     global max_hp, max_mp, ultimo_hp, ultimo_dano_recibido
     
     while True:
@@ -304,6 +555,21 @@ estado_actual = "combate"  # Empezar en combate por seguridad
 lock_estado = threading.Lock()
 
 def rutina_combate():
+    """
+    Hilo principal que maneja el estado de combate activo.
+    
+    Ejecuta búsqueda de enemigos y combate cuando el estado es "combate".
+    Busca enemigos cada AUTOATAQUE_DURACION segundos y ejecuta rutina completa.
+    
+    Args:
+        None
+        
+    Returns:
+        None (función de hilo, ejecuta indefinidamente)
+        
+    Example:
+        threading.Thread(target=rutina_combate, daemon=True).start()
+    """
     ultimo_busqueda_enemigo = 0
     
     while True:
@@ -331,7 +597,21 @@ def rutina_combate():
             time.sleep(2)
 
 def buscar_pelea():
-    """Función que intenta atacar por 5 segundos en modo patrullaje"""
+    """
+    Intenta encontrar y atacar enemigos por 5 segundos durante patrullaje.
+    
+    Busca enemigos, se acerca y ataca por tiempo limitado. Puede interrumpirse
+    si cambia el estado del bot. Usa habilidades disponibles durante el ataque.
+    
+    Args:
+        None
+        
+    Returns:
+        None
+        
+    Example:
+        buscar_pelea()  # Busca y ataca por 5 segundos
+    """
     global ultimo_uso_hab1, ultimo_uso_hab2, ultimo_uso_hab3  # FIX: Declare as global
     
     print("[*] 🎯 INICIANDO BÚSQUEDA DE PELEA (5 segundos)...")
@@ -360,6 +640,21 @@ def buscar_pelea():
     print("[+] Búsqueda de pelea completada (5 segundos)")
 
 def rutina_no_combate():
+    """
+    Hilo que maneja el estado de patrullaje/exploración.
+    
+    Ejecuta movimiento, búsqueda de enemigos, aplicación de buffs y camping
+    cuando el estado es "patrullaje". Incluye recuperación de vida.
+    
+    Args:
+        None
+        
+    Returns:
+        None (función de hilo, ejecuta indefinidamente)
+        
+    Example:
+        threading.Thread(target=rutina_no_combate, daemon=True).start()
+    """
     global ultimo_dano_recibido
     
     while True:
@@ -401,7 +696,21 @@ def rutina_no_combate():
             time.sleep(2)
 
 def monitoreo_patrullaje():
-    """Hilo específico que monitorea pérdida de HP durante patrullaje"""
+    """
+    Hilo específico que detecta daño durante patrullaje.
+    
+    Monitorea constantemente el HP durante el patrullaje y cambia automáticamente
+    a modo combate si detecta pérdida de vida, indicando presencia de enemigos.
+    
+    Args:
+        None
+        
+    Returns:
+        None (función de hilo, ejecuta indefinidamente)
+        
+    Example:
+        threading.Thread(target=monitoreo_patrullaje, daemon=True).start()
+    """
     global estado_actual, ultimo_dano_recibido
     hp_anterior = None
     
@@ -434,6 +743,21 @@ def monitoreo_patrullaje():
             time.sleep(1)
 
 def estado_personaje_loop():
+    """
+    Hilo maestro que gestiona las transiciones entre estados.
+    
+    Controla el cambio automático entre modo "combate" y "patrullaje" basado
+    en el tiempo transcurrido since el último daño recibido (10 segundos).
+    
+    Args:
+        None
+        
+    Returns:
+        None (función de hilo, ejecuta indefinidamente)
+        
+    Example:
+        threading.Thread(target=estado_personaje_loop, daemon=True).start()
+    """
     global estado_actual, ultimo_dano_recibido
     
     while True:
@@ -448,46 +772,3 @@ def estado_personaje_loop():
             tiempo_sin_dano = time.time() - ultimo_dano_recibido
             
             # Lógica de transición de estados
-            if tiempo_sin_dano >= 10.0:
-                nuevo_estado = "patrullaje"
-            else:
-                nuevo_estado = "combate"
-
-            with lock_estado:
-                if nuevo_estado != estado_actual:
-                    print(f"[~] 🔄 CAMBIO DE ESTADO: {estado_actual} → {nuevo_estado}")
-                    print(f"[~] ⏱️ Tiempo sin daño: {tiempo_sin_dano:.1f} segundos")
-                    estado_actual = nuevo_estado
-
-            time.sleep(2)
-        except Exception as e:
-            print(f"[ERROR][Gestión de Estado] {e}")
-            time.sleep(2)
-
-# Iniciar hilos
-threading.Thread(target=estado_personaje_loop, daemon=True).start()
-threading.Thread(target=rutina_combate, daemon=True).start()
-threading.Thread(target=rutina_no_combate, daemon=True).start()
-threading.Thread(target=monitoreo_patrullaje, daemon=True).start()
-threading.Thread(target=verificar_pociones, daemon=True).start()
-threading.Thread(target=mantener_recoleccion, daemon=True).start()  # Hilo SIEMPRE activo
-
-# El bucle principal ahora supervisa el estado general
-print("[+] 🤖 Bot iniciado con sistema de estados mejorado:")
-print("[+] ⚔️ COMBATE → Búsqueda de enemigos cada 7 segundos")
-print("[+] ⚔️ COMBATE → 10 segundos sin daño → 🚶 PATRULLAJE") 
-print("[+] 🚶 PATRULLAJE → Buscar pelea (5s) + Monitoreo continuo de HP")
-print("[+] 🚨 Pérdida de HP en patrullaje → ⚔️ COMBATE inmediato")
-print("[+] 🔄 Recolección de objetos SIEMPRE ACTIVA")
-
-while True:
-    try:
-        time.sleep(10)  # El trabajo está delegado a los hilos
-        # Mostrar estado actual cada 10 segundos
-        tiempo_sin_dano = time.time() - ultimo_dano_recibido
-        with lock_estado:
-            estado_emoji = "⚔️" if estado_actual == "combate" else "🚶"
-            print(f"[STATUS] {estado_emoji} Estado: {estado_actual.upper()} | ⏱️ Sin daño: {tiempo_sin_dano:.1f}s | 🔄 Recolección: ON")
-    except KeyboardInterrupt:
-        print("\n[!] Bot detenido por el usuario.")
-        break
