@@ -11,7 +11,7 @@ COOLDOWN_HAB3 = 5
 COOLDOWN_DEBUFF = 24
 
 # Numero de Buffs
-NUM_BUFS = 8vv
+NUM_BUFS = 8
 
 # Intervalo para lanzar el buff (en minutos)
 BUFF_INTERVAL = 20
