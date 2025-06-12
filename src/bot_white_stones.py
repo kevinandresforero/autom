@@ -3,6 +3,7 @@ from src.potions import PotionThread
 from src.search_and_attack import SearchAndAttackThread
 from src.buff_thread import BuffThread
 import threading
+import time
 
 class BotWhiteStones(Character):
     def __init__(self):
@@ -39,15 +40,31 @@ class BotWhiteStones(Character):
         self.threads.append(hilo_bot)
 
     def run(self):
+        last_damage_time = time.time()
         while self.state != self.STATE_DEAD:
             self.set_hp()
             self.set_mp()
             print(f"[Bot] HP: {self.hp}, MP: {self.mp}")
-            # Aquí puedes controlar cuándo debe buffearse, por ejemplo:
-            # if alguna_condicion_para_buffear:
-            #     self.should_buff = True
-            # else:
-            #     self.should_buff = False
+
+            # Detecta daño recibido
+            if hasattr(self, "last_hp"):
+                if self.hp < self.last_hp:
+                    last_damage_time = time.time()
+                    if self.action != self.STATE_IN_COMBAT:
+                        print("[Bot] Switching to IN_COMBAT state (damage received)")
+                    self.action = self.STATE_IN_COMBAT
+            self.last_hp = self.hp
+
+            # Si lleva más de 15 segundos sin daño, pasa a estado PATROLLING
+            if time.time() - last_damage_time > 15:
+                if self.action != self.STATE_PATROLLING:
+                    print("[Bot] Switching to PATROLLING state (no damage in 15s)")
+                self.action = self.STATE_PATROLLING
+                # Solo gira a la izquierda si NO está buffeando
+                if self.action != self.STATE_BUFFING:
+                    print("[Bot] Patrolling: holding 'a' to turn left")
+                    self.do.hold_key("a")
+
             # El sleep debe ir en las rutinas/hilos secundarios
 
 

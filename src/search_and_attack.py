@@ -11,7 +11,7 @@ class SearchAndAttackThread:
     def __init__(self, character):
         """
         :param character: Objeto de tipo Character (debe tener KEY_SEARCH, KEY_AUTOATTACK, AUTOATTACK_DURATION,
-                          USE_SKILL1, USE_SKILL2, USE_SKILL3, KEY_SKILL1, KEY_SKILL2, KEY_SKILL3, etc.)
+        USE_SKILL1, USE_SKILL2, USE_SKILL3, KEY_SKILL1, KEY_SKILL2, KEY_SKILL3, etc.)
         """
         self.character = character
         self.character.action = self.character.STATE_IN_COMBAT
