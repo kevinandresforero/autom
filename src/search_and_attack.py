@@ -30,13 +30,13 @@ class SearchAndAttackThread:
         self.thread.join()
 
     def run(self):
+        last_buff_time = 0
         while not self._stop_event.is_set():
             now = time.time()
-            # Si recibe daño, puede contraatacar con 'f' (KEY_AUTOATTACK) incluso si está buffeando
-            if hasattr(self.character, "hp"):
-                if self.character.hp < getattr(self, "last_hp", self.character.hp):
-                    print("[!] Damage received! Counter-attacking with key:", self.character.KEY_AUTOATTACK)
-                    self.character.do.press_key(self.character.KEY_AUTOATTACK)
+            # Actualiza el tiempo si está buffeando
+            if self.character.action == self.character.STATE_BUFFING:
+                last_buff_time = now
+
             # Solo busca y ataca si NO está buffeando ni recuperando
             if self.character.action not in [self.character.STATE_BUFFING, self.character.STATE_RECOVERING]:
                 self.character.do.press_key(self.character.KEY_SEARCH)
@@ -44,33 +44,34 @@ class SearchAndAttackThread:
                 self.character.do.press_key(self.character.KEY_AUTOATTACK)
                 print(f"[~] Attacking with key: {self.character.KEY_AUTOATTACK}")
 
-                # Uso de habilidades según configuración y cooldowns
-                # Skill 1
-                if getattr(self.character, "USE_SKILL1", False):
-                    cooldown1 = float(getattr(self.character, "COOLDOWN_SKILL1", 0))
-                    if now - self.last_skill1 >= cooldown1:
-                        print(f"[~] Using Skill 1 ({self.character.KEY_SKILL1})")
-                        self.character.do.press_key(self.character.KEY_SKILL1)
-                        self.last_skill1 = now
-                        time.sleep(float(getattr(self.character, "USE_SKILL1", 0)))  # Espera animación
+                # Solo usa habilidades si han pasado más de 10 segundos desde el último buff
+                if now - last_buff_time > 10:
+                    # Skill 1
+                    if getattr(self.character, "USE_SKILL1", False):
+                        cooldown1 = float(getattr(self.character, "COOLDOWN_SKILL1", 0))
+                        if now - self.last_skill1 >= cooldown1:
+                            print(f"[~] Using Skill 1 ({self.character.KEY_SKILL1})")
+                            self.character.do.press_key(self.character.KEY_SKILL1)
+                            self.last_skill1 = now
+                            time.sleep(float(getattr(self.character, "USE_SKILL1", 0)))  # Espera animación
 
-                # Skill 2
-                if getattr(self.character, "USE_SKILL2", False):
-                    cooldown2 = float(getattr(self.character, "COOLDOWN_SKILL2", 0))
-                    if now - self.last_skill2 >= cooldown2:
-                        print(f"[~] Using Skill 2 ({self.character.KEY_SKILL2})")
-                        self.character.do.press_key(self.character.KEY_SKILL2)
-                        self.last_skill2 = now
-                        time.sleep(float(getattr(self.character, "USE_SKILL2", 0)))  # Espera animación
+                    # Skill 2
+                    if getattr(self.character, "USE_SKILL2", False):
+                        cooldown2 = float(getattr(self.character, "COOLDOWN_SKILL2", 0))
+                        if now - self.last_skill2 >= cooldown2:
+                            print(f"[~] Using Skill 2 ({self.character.KEY_SKILL2})")
+                            self.character.do.press_key(self.character.KEY_SKILL2)
+                            self.last_skill2 = now
+                            time.sleep(float(getattr(self.character, "USE_SKILL2", 0)))  # Espera animación
 
-                # Skill 3
-                if getattr(self.character, "USE_SKILL3", False):
-                    cooldown3 = float(getattr(self.character, "COOLDOWN_SKILL3", 0))
-                    if now - self.last_skill3 >= cooldown3:
-                        print(f"[~] Using Skill 3 ({self.character.KEY_SKILL3})")
-                        self.character.do.press_key(self.character.KEY_SKILL3)
-                        self.last_skill3 = now
-                        time.sleep(float(getattr(self.character, "USE_SKILL3", 0)))  # Espera animación
+                    # Skill 3
+                    if getattr(self.character, "USE_SKILL3", False):
+                        cooldown3 = float(getattr(self.character, "COOLDOWN_SKILL3", 0))
+                        if now - self.last_skill3 >= cooldown3:
+                            print(f"[~] Using Skill 3 ({self.character.KEY_SKILL3})")
+                            self.character.do.press_key(self.character.KEY_SKILL3)
+                            self.last_skill3 = now
+                            time.sleep(float(getattr(self.character, "USE_SKILL3", 0)))  # Espera animación
 
             # Actualiza last_hp para la siguiente iteración
             if hasattr(self.character, "hp"):
