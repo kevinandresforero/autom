@@ -2,13 +2,13 @@
 
 # Memory addresses (hexadecimal without 0x)
 # These addresses are used to read the character's HP and MP from the game's memory.
-OFFSET_HP = 22602760
-OFFSET_MP = 22602768
+OFFSET_HP = 222624E8
+OFFSET_MP = 222624F0
 
 # Skill cooldowns (in seconds)
 # Minimum time that must pass between each skill use.
 COOLDOWN_SKILL1 = 198
-COOLDOWN_SKILL2 = 18
+COOLDOWN_SKILL2 = 35
 COOLDOWN_SKILL3 = 16
 COOLDOWN_DEBUFF = 178
 
