@@ -1,8 +1,8 @@
 # --- CONFIGURACIÓN DEL BOT DBO ---
 
 # Direcciones de memoria (hexadecimal sin 0x)
-OFFSET_HP = 2016E3D8
-OFFSET_MP = 2016E3E0
+OFFSET_HP = 2BDF6BC8
+OFFSET_MP = 2BDF6808
 
 # Enfriamientos de habilidades (en segundos)
 COOLDOWN_HAB1 = 162
@@ -11,7 +11,7 @@ COOLDOWN_HAB3 = 5
 COOLDOWN_DEBUFF = 24
 
 # Numero de Buffs
-NUM_BUFS = 8
+NUM_BUFS = 9
 
 # Intervalo para lanzar el buff (en minutos)
 BUFF_INTERVAL = 20
@@ -24,7 +24,7 @@ USO_DEBUFF = 1.5
 USO_BUFF = 7
 
 # Tiempo de autoataque (en segundos)
-AUTOATAQUE_DURACION = 7
+AUTOATAQUE_DURACION = 4.5
 
 # Nombre del proceso del juego
 PROCESS_NAME = DboClient.exe

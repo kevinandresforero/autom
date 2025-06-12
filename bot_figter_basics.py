@@ -3,7 +3,6 @@ from pymem.process import module_from_name
 import pyautogui
 import time
 import threading
-import random
 
 # --- CARGAR CONFIGURACIÓN DESDE TXT ---
 def cargar_configuracion(archivo):
