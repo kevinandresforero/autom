@@ -1,0 +1,64 @@
+# --- DBO BOT CONFIGURATION ---
+
+# Memory addresses (hexadecimal without 0x)
+# These addresses are used to read the character's HP and MP from the game's memory.
+OFFSET_HP = 22602760
+OFFSET_MP = 22602768
+
+# Skill cooldowns (in seconds)
+# Minimum time that must pass between each skill use.
+COOLDOWN_SKILL1 = 162
+COOLDOWN_SKILL2 = 20
+COOLDOWN_SKILL3 = 5
+COOLDOWN_DEBUFF = 24
+
+# Number of Buffs
+# Amount of buffs the bot will cast in the buff routine (maximum 9).
+NUM_BUFFS = 9
+
+# Buff interval (in minutes)
+# How often (in minutes) the bot will apply the configured buffs.
+BUFF_INTERVAL = 20
+
+# Skill animation/duration time (in seconds)
+# Estimated animation or execution time for each skill.
+USE_SKILL1 = 1
+USE_SKILL2 = 1
+USE_SKILL3 = 3.5
+USE_DEBUFF = 1.5
+USE_BUFF = 7
+
+# Auto-attack time (in seconds)
+# The duration for which the character can kill the enemy with the zone's maximum power using autoattacks.
+AUTOATTACK_DURATION = 4.5
+
+# Game process name
+# Name of the game executable the bot should connect to.
+PROCESS_NAME = DboClient.exe
+
+# --- CONTROL KEYS ---
+# Key mapping for each bot action.
+# These keys must match those configured in the game.
+
+# Key to cast skill 1
+KEY_SKILL1 = 1
+# Key to cast skill 2
+KEY_SKILL2 = 2
+# Key to cast skill 3
+KEY_SKILL3 = 3
+# Key to cast debuff (should be f1 to f9)
+KEY_DEBUFF = f1
+# Auxiliary key to cast buffs.
+KEY_BUFF = alt
+# Key to use HP potion
+KEY_POTION_HP = 9
+# Key to use MP potion
+KEY_POTION_MP = 0
+# Key for auto-attack
+KEY_AUTOATTACK = f
+# Key to pick up items
+KEY_PICKUP = v
+# Key to pause combat
+KEY_PAUSE_COMBAT = x
+# Key to search for target
+KEY_SEARCH = tab
