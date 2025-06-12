@@ -7,10 +7,10 @@ OFFSET_MP = 22602768
 
 # Skill cooldowns (in seconds)
 # Minimum time that must pass between each skill use.
-COOLDOWN_SKILL1 = 162
-COOLDOWN_SKILL2 = 20
-COOLDOWN_SKILL3 = 5
-COOLDOWN_DEBUFF = 24
+COOLDOWN_SKILL1 = 198
+COOLDOWN_SKILL2 = 18
+COOLDOWN_SKILL3 = 16
+COOLDOWN_DEBUFF = 178
 
 # Number of Buffs
 # Amount of buffs the bot will cast in the buff routine (maximum 9).
@@ -22,8 +22,8 @@ BUFF_INTERVAL = 20
 
 # Skill animation/duration time (in seconds)
 # Estimated animation or execution time for each skill.
-USE_SKILL1 = 1
-USE_SKILL2 = 1
+USE_SKILL1 = 1   
+USE_SKILL2 = 5
 USE_SKILL3 = 3.5
 USE_DEBUFF = 1.5
 USE_BUFF = 7
