@@ -4,7 +4,7 @@
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/tuusuario/tu-repo-bot-dbozero.git
+git clone https://github.com/kevinandresforero/autom
 
 # 2. Entra a la carpeta del proyecto
 cd tu-repo-bot-dbozero/autom
