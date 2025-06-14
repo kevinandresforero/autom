@@ -14,8 +14,6 @@ pip install pymem pyautogui
 
 # 4. Ejecuta el bot (elige el archivo principal que desees usar)
 python main.py
-# o para el asistente clásico
-python src/asistente.py
 ```
 
 ---
