@@ -1,4 +1,4 @@
-# Bot DBO Fighter (Versión 1)
+# Bot DBO (Versión 1)
 
 ## 🚀 Comandos Rápidos de Instalación y Uso
 
