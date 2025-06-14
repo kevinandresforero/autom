@@ -21,20 +21,26 @@ class Character(Build):
         """
         Prints a summary of all instance variables of the Character class, including configuration, timers, and state.
         """
+        pass
 
     def isAlive(self):
         """
         Checks if the character is alive and updates the state accordingly.
+
+        Returns:
+            bool: True if the character is dead, False if alive.
         """
         if self.state == Build.STATE_DEAD:
-            print("[X] Character is dead.")
             return True
         else:
-            print("[✓] Character is alive.")
             self.state = Build.STATE_ALIVE
             return False
-        
+
     def set_hp(self):
+        """
+        Updates the character's HP value from memory and updates the state.
+        Also updates the maximum HP and MP values seen so far.
+        """
         self.hp = self.get_hp_value()
         self.actualizar_maximos(self.hp, self.mp)
         if self.hp <= 0:
@@ -43,13 +49,30 @@ class Character(Build):
             self.state = Build.STATE_ALIVE
 
     def set_mp(self):
+        """
+        Updates the character's MP value from memory.
+        Also updates the maximum HP and MP values seen so far.
+        """
         self.mp = self.get_mp_value()
         self.actualizar_maximos(self.hp, self.mp)
 
     def actualizar_maximos(self, hp_actual, mp_actual):
+        """
+        Updates the maximum HP and MP values if the current values are higher.
+
+        Args:
+            hp_actual (int): Current HP value.
+            mp_actual (int): Current MP value.
+        """
         if hp_actual > self.max_hp:
             self.max_hp = hp_actual
-            print(f"[+] Nuevo HP máximo registrado: {self.max_hp}")
         if mp_actual > self.max_mp:
             self.max_mp = mp_actual
-            print(f"[+] Nuevo MP máximo registrado: {self.max_mp}")
+
+    def buscar_enemigos(self):
+        """
+        Busca enemigos solo si el personaje NO está en estado de buffeo.
+        """
+        if self.action != self.STATE_BUFFING:
+            self.do.press_key(self.KEY_SEARCH)
+

@@ -2,7 +2,7 @@
 
 # Memory addresses (hexadecimal without 0x)
 # These addresses are used to read the character's HP and MP from the game's memory.
-OFFSET_HP = 222624E8
+OFFSET_HP = 2ADDD308
 OFFSET_MP = 222624F0
 
 # Skill cooldowns (in seconds)

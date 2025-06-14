@@ -65,7 +65,7 @@ class LoadConfiguration:
             pm = Pymem(process_name)
             value = pm.read_int(address)
             return value
-        except Exception as e:
+        except Exception:
             return None
 
     def load_configuration(self, file_path):

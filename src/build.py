@@ -34,6 +34,9 @@ class Build(LoadConfiguration):
     STATE_BUFFING = "buffing"
 
     def __init__(self):
+        """
+        Initializes the Build class, loading configuration, setting up timers, actions, and state variables.
+        """
         # --- LOAD CONFIGURATION FROM FILE ---
         super().__init__()
         # --- TIMERS FOR THREAD ROUTINES ---

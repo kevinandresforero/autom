@@ -42,14 +42,13 @@ class GeneralActions:
 
     def press_combo(self, key1, key2, delay=0.1):
         """
-        Presiona dos teclas al mismo tiempo (por ejemplo, para combos como ALT+1).
+        Presses two keys as a combo (e.g., ALT+1).
 
         Args:
-            key1 (str): Primera tecla (por ejemplo, 'alt').
-            key2 (str): Segunda tecla (por ejemplo, '1').
-            delay (float): Tiempo en segundos entre presionar y soltar las teclas.
+            key1 (str): First key (e.g., 'alt').
+            key2 (str): Second key (e.g., '1').
+            delay (float): Time in seconds between pressing and releasing the keys.
         """
-        import pyautogui
         pyautogui.keyDown(key1)
         time.sleep(0.05)
         pyautogui.press(key2)

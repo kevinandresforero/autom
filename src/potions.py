@@ -20,6 +20,8 @@ class PotionThread:
 
     def __init__(self, character, interval=0.1):
         """
+        Inicializa el hilo de pociones.
+
         :param character: Objeto de tipo Character
         :param interval: Intervalo de actualización en segundos
         """
@@ -29,25 +31,30 @@ class PotionThread:
         self.thread = threading.Thread(target=self.run, daemon=True)
 
     def start(self):
+        """
+        Inicia el hilo de pociones.
+        """
         self.thread.start()
 
     def stop(self):
+        """
+        Detiene el hilo de pociones.
+        """
         self._stop_event.set()
         self.thread.join()
 
     def run(self):
+        """
+        Lógica principal del hilo: actualiza el valor de HP y usa poción si el porcentaje de vida es menor o igual a 45%.
+        """
         while not self._stop_event.is_set():
             self.character.set_hp()
             if self.character.isAlive():
-                print("[X] Character is dead.")
+                pass
             else:
                 porcentaje = 0
                 if self.character.max_hp > 0:
                     porcentaje = (self.character.hp / self.character.max_hp) * 100
-                print(f"[✓] Character is alive. HP: {self.character.hp}/{self.character.max_hp} ({porcentaje:.2f}%)")
                 if porcentaje <= 45:
-                    print(f"[!] HP is below 45%: {porcentaje:.2f}%. Trying to use potion key: {self.character.KEY_POTION_HP}")
                     self.character.do.press_key(self.character.KEY_POTION_HP)
-                else:
-                    print(f"[i] HP is above 45%. No potion used.")
             time.sleep(0.005)

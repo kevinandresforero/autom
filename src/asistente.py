@@ -6,6 +6,15 @@ import threading
 
 # --- CARGAR CONFIGURACIÓN DESDE TXT ---
 def cargar_configuracion(archivo):
+    """
+    Carga la configuración desde un archivo de texto.
+
+    Args:
+        archivo (str): Ruta al archivo de configuración.
+
+    Returns:
+        dict: Diccionario con las claves y valores de configuración.
+    """
     config = {}
     with open(archivo, 'r') as f:
         for linea in f:
@@ -45,6 +54,15 @@ BUFF_INTERVAL = config.get("BUFF_INTERVAL", 5)  # minutos
 
 # --- CONEXIÓN A MEMORIA ---
 def esperar_proceso(nombre_proceso):
+    """
+    Espera hasta que el proceso del juego esté disponible y retorna una instancia de Pymem.
+
+    Args:
+        nombre_proceso (str): Nombre del proceso a esperar.
+
+    Returns:
+        Pymem: Instancia conectada al proceso.
+    """
     while True:
         try:
             pm = Pymem(nombre_proceso)
@@ -66,11 +84,24 @@ ultimo_buff = 0
 
 # --- FUNCIONES ---
 def leer_hp_mp():
+    """
+    Lee los valores actuales de HP y MP desde la memoria del juego.
+
+    Returns:
+        tuple: (hp, mp) valores actuales de HP y MP.
+    """
     hp = pm.read_int(OFFSET_HP)
     mp = pm.read_int(OFFSET_MP)
     return hp, mp
 
 def actualizar_maximos(hp_actual, mp_actual):
+    """
+    Actualiza los valores máximos de HP y MP si los actuales son mayores.
+
+    Args:
+        hp_actual (int): HP actual.
+        mp_actual (int): MP actual.
+    """
     global max_hp, max_mp
     if hp_actual > max_hp:
         max_hp = hp_actual
@@ -80,6 +111,13 @@ def actualizar_maximos(hp_actual, mp_actual):
         print(f"[+] Nuevo MP máximo: {max_mp}")
 
 def usar_pociones(hp_actual, mp_actual):
+    """
+    Usa pociones de HP o MP si el porcentaje es menor al 45%.
+
+    Args:
+        hp_actual (int): HP actual.
+        mp_actual (int): MP actual.
+    """
     global max_hp, max_mp
     if max_hp == 0 or max_mp == 0:
         return
@@ -96,9 +134,18 @@ def usar_pociones(hp_actual, mp_actual):
         pyautogui.press(TECLA_POCION_MP)
 
 def presionar_tecla(tecla):
+    """
+    Presiona una tecla usando pyautogui.
+
+    Args:
+        tecla (str): Tecla a presionar.
+    """
     pyautogui.press(tecla)
 
 def lanzar_buff():
+    """
+    Lanza los buffs configurados si ha pasado el intervalo de tiempo definido.
+    """
     global ultimo_buff
     if time.time() - ultimo_buff >= BUFF_INTERVAL * 60:
         print("[*] Lanzando buffs...")
@@ -116,6 +163,9 @@ def lanzar_buff():
 
 # --- HILOS SECUNDARIOS ---
 def hilo_pociones():
+    """
+    Hilo que verifica y usa pociones automáticamente cuando HP o MP son bajos.
+    """
     while True:
         try:
             hp, mp = leer_hp_mp()
@@ -127,6 +177,9 @@ def hilo_pociones():
             time.sleep(2)
 
 def hilo_recoleccion():
+    """
+    Hilo que presiona la tecla de recoger objetos periódicamente.
+    """
     while True:
         try:
             pyautogui.press(TECLA_OBJETO)
@@ -137,6 +190,9 @@ def hilo_recoleccion():
 
 # --- RUTINA PRINCIPAL ---
 def rutina_principal():
+    """
+    Rutina principal del asistente: actualiza HP/MP, usa pociones y lanza buffs periódicamente.
+    """
     while True:
         try:
             hp, mp = leer_hp_mp()

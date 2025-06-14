@@ -7,6 +7,15 @@ import search_file
 
 # --- LOAD CONFIGURATION FROM TXT ---
 def cargar_configuracion(archivo):
+    """
+    Carga la configuración desde un archivo de texto.
+
+    Args:
+        archivo (str): Ruta al archivo de configuración.
+
+    Returns:
+        dict: Diccionario con las claves y valores de configuración.
+    """
     config = {}
     with open(archivo, 'r') as f:
         for linea in f:
@@ -80,6 +89,15 @@ last_damage_received = time.time()
 
 # --- MEMORY CONNECTION ---
 def esperar_proceso(nombre_proceso):
+    """
+    Espera hasta que el proceso del juego esté disponible y retorna una instancia de Pymem.
+
+    Args:
+        nombre_proceso (str): Nombre del proceso a esperar.
+
+    Returns:
+        Pymem: Instancia conectada al proceso.
+    """
     while True:
         try:
             pm = Pymem(nombre_proceso)
@@ -96,16 +114,34 @@ base_addr = base_module.lpBaseOfDll
 
 # --- GENERAL FUNCTIONS ---
 def press_key(key):
+    """
+    Presiona una tecla usando pyautogui.
+
+    Args:
+        key (str): Tecla a presionar.
+    """
     if key != 'v':
         time.sleep(0.2)
     pyautogui.press(key)
 
 def hold_key(key):
+    """
+    Mantiene presionada una tecla durante 0.9 segundos.
+
+    Args:
+        key (str): Tecla a mantener presionada.
+    """
     pyautogui.keyDown(key)
     time.sleep(0.9)
     pyautogui.keyUp(key)
 
 def read_hp_mp():
+    """
+    Lee los valores actuales de HP y MP desde la memoria del juego.
+
+    Returns:
+        tuple: (hp, mp) valores actuales de HP y MP.
+    """
     hp = pm.read_int(OFFSET_HP)
     mp = pm.read_int(OFFSET_MP)
     return hp, mp
@@ -114,6 +150,13 @@ max_hp = 0
 max_mp = 0
 
 def update_max_values(current_hp, current_mp):
+    """
+    Actualiza los valores máximos de HP y MP si los actuales son mayores.
+
+    Args:
+        current_hp (int): HP actual.
+        current_mp (int): MP actual.
+    """
     global max_hp, max_mp
     if current_hp > max_hp:
         max_hp = current_hp
@@ -126,8 +169,8 @@ buffing = False
 last_buff_applied = 0.0
 def apply_buffs():
     """
-    Applies the buffs defined in the configuration.
-    Uses the key specified in KEY_BUFF, repeating NUM_BUFFS times.
+    Aplica los buffs definidos en la configuración.
+    Usa la tecla definida en KEY_BUFF, repitiendo NUM_BUFFS veces.
     """
     global buffing, last_buff_applied
     if time.time() - last_buff_applied >= 1200:
@@ -146,6 +189,9 @@ def apply_buffs():
 
 # --- THREAD 1: Potion Usage ---
 def thread_use_potions():
+    """
+    Hilo que usa pociones automáticamente cuando el HP es bajo.
+    """
     global max_hp
     while True:
         hp, mp = read_hp_mp()
@@ -160,6 +206,9 @@ def thread_use_potions():
 current_state = "patrolling"
 
 def thread_character_state():
+    """
+    Hilo que gestiona el estado del personaje (combate, patrulla, sentado) y realiza acciones según el estado.
+    """
     global current_state, last_damage_received, last_hp
     while True:
         hp, mp = read_hp_mp()
@@ -199,6 +248,9 @@ def thread_character_state():
 
 # --- THREAD 3: Collect Items ---
 def thread_collect_items():
+    """
+    Hilo que recoge ítems automáticamente manteniendo presionada la tecla de recoger.
+    """
     while True:
         pyautogui.keyDown(KEY_PICKUP)
         time.sleep(0.5)
@@ -207,6 +259,9 @@ def thread_collect_items():
 
 # --- Periodic Buff Function ---
 def periodic_buff():
+    """
+    Aplica buffs periódicamente según el intervalo configurado.
+    """
     global last_buff
     current_time = time.time()
     if current_time - last_buff > BUFF_INTERVAL * 60:

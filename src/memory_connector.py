@@ -22,7 +22,7 @@ class MemoryConnection:
         self.pm = self.wait_for_process(process_name)
         self.base_module = module_from_name(self.pm.process_handle, process_name)
         if self.base_module is None:
-            raise Exception("[X] Game module not found.")
+            raise Exception("Game module not found.")
         self.base_addr = self.base_module.lpBaseOfDll
 
     def wait_for_process(self, process_name):
@@ -40,5 +40,4 @@ class MemoryConnection:
                 pm = Pymem(process_name)
                 return pm
             except Exception:
-                print("[!] Waiting for the game to start...")
                 time.sleep(1)
