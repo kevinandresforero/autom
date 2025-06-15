@@ -74,5 +74,7 @@ class Character(Build):
         Busca enemigos solo si el personaje NO está en estado de buffeo.
         """
         if self.action != self.STATE_BUFFING:
+            self.do.hold_key('a')
             self.do.press_key(self.KEY_SEARCH)
+            self.do.press_key('w')
 

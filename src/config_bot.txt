@@ -2,8 +2,8 @@
 
 # Memory addresses (hexadecimal without 0x)
 # These addresses are used to read the character's HP and MP from the game's memory.
-OFFSET_HP = 2ADDD308
-OFFSET_MP = 222624F0
+OFFSET_HP = 23E2CF40
+OFFSET_MP = 18F2FFD0
 
 # Skill cooldowns (in seconds)
 # Minimum time that must pass between each skill use.
@@ -62,3 +62,5 @@ KEY_PICKUP = v
 KEY_PAUSE_COMBAT = x
 # Key to search for target
 KEY_SEARCH = tab
+
+

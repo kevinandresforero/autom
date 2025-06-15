@@ -37,7 +37,7 @@ class GeneralActions:
             key (str): Key to hold.
         """
         pyautogui.keyDown(key)
-        time.sleep(0.9)
+        time.sleep(0.75)
         pyautogui.keyUp(key)
 
     def press_combo(self, key1, key2, delay=0.1):
