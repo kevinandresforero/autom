@@ -2,19 +2,19 @@
 
 # Memory addresses (hexadecimal without 0x)
 # These addresses are used to read the character's HP and MP from the game's memory.
-OFFSET_HP = 23E2CF40
-OFFSET_MP = 18F2FFD0
+OFFSET_HP = 261B0E58
+OFFSET_MP = 18D56260
 
 # Skill cooldowns (in seconds)
 # Minimum time that must pass between each skill use.
-COOLDOWN_SKILL1 = 198
-COOLDOWN_SKILL2 = 35
-COOLDOWN_SKILL3 = 16
+COOLDOWN_SKILL1 = 160
+COOLDOWN_SKILL2 = 28
+COOLDOWN_SKILL3 = 20
 COOLDOWN_DEBUFF = 178
 
 # Number of Buffs
 # Amount of buffs the bot will cast in the buff routine (maximum 9).
-NUM_BUFFS = 9
+NUM_BUFFS = 12
 
 # Buff interval (in minutes)
 # How often (in minutes) the bot will apply the configured buffs.
@@ -30,7 +30,7 @@ USE_BUFF = 7
 
 # Auto-attack time (in seconds)
 # The duration for which the character can kill the enemy with the zone's maximum power using autoattacks.
-AUTOATTACK_DURATION = 4.5
+AUTOATTACK_DURATION = 10.5
 
 # Game process name
 # Name of the game executable the bot should connect to.
@@ -62,5 +62,11 @@ KEY_PICKUP = v
 KEY_PAUSE_COMBAT = x
 # Key to search for target
 KEY_SEARCH = tab
+
+
+
+
+
+
 
 
