@@ -2,29 +2,29 @@
 
 # Memory addresses (hexadecimal without 0x)
 # These addresses are used to read the character's HP and MP from the game's memory.
-OFFSET_HP = 261B0E58
-OFFSET_MP = 18D56260
+OFFSET_HP = 2B265E08
+OFFSET_MP = 2B265CB8
 
 # Skill cooldowns (in seconds)
 # Minimum time that must pass between each skill use.
-COOLDOWN_SKILL1 = 160
-COOLDOWN_SKILL2 = 28
-COOLDOWN_SKILL3 = 20
-COOLDOWN_DEBUFF = 178
+COOLDOWN_SKILL1 = 12
+COOLDOWN_SKILL2 = 10
+COOLDOWN_SKILL3 = 16
+COOLDOWN_DEBUFF = 24
 
 # Number of Buffs
 # Amount of buffs the bot will cast in the buff routine (maximum 9).
-NUM_BUFFS = 12
+NUM_BUFFS = 7
 
 # Buff interval (in minutes)
 # How often (in minutes) the bot will apply the configured buffs.
-BUFF_INTERVAL = 20
+BUFF_INTERVAL = 19
 
 # Skill animation/duration time (in seconds)
 # Estimated animation or execution time for each skill.
-USE_SKILL1 = 1   
+USE_SKILL1 = 5   
 USE_SKILL2 = 5
-USE_SKILL3 = 3.5
+USE_SKILL3 = 1.5
 USE_DEBUFF = 1.5
 USE_BUFF = 7
 
@@ -62,6 +62,9 @@ KEY_PICKUP = v
 KEY_PAUSE_COMBAT = x
 # Key to search for target
 KEY_SEARCH = tab
+
+
+
 
 
 

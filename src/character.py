@@ -13,8 +13,15 @@ class Character(Build):
         self.max_hp, self.max_mp = 0, 0
         self.hp = 0
         self.mp = 0
-        self.set_hp()
-        self.set_mp()
+        try:
+            self.set_hp()
+        except Exception:
+            self.hp = 0
+
+        try:
+            self.set_mp()
+        except Exception:
+            self.mp = 0
         self.isAlive()
 
     def summary(self):
@@ -64,10 +71,17 @@ class Character(Build):
             hp_actual (int): Current HP value.
             mp_actual (int): Current MP value.
         """
-        if hp_actual > self.max_hp:
-            self.max_hp = hp_actual
-        if mp_actual > self.max_mp:
-            self.max_mp = mp_actual
+        try:
+            if hp_actual > self.max_hp:
+                self.max_hp = hp_actual
+        except Exception:
+            self.max_hp = 0
+
+        try:
+            if mp_actual > self.max_mp:
+                self.max_mp = mp_actual
+        except Exception:
+            self.max_mp = 0
 
     def buscar_enemigos(self):
         """

@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import messagebox, filedialog, scrolledtext
 from src.bot_white_stones import BotWhiteStones
+from src.bot_no_lp import BotWhiteStonesNoLp
 import threading
 import time
 
@@ -30,6 +31,9 @@ class DBOBotApp:
         btn_farm = tk.Button(root, text="1 - Farm Whitestones", width=30, command=self.start_farm)
         btn_farm.pack(pady=5)
 
+        btn_farm_no_lp = tk.Button(root, text="1.1 - Farm Whitestones (sin control LP)", width=30, command=self.start_farm_no_lp)
+        btn_farm_no_lp.pack(pady=5)
+
         btn_loot = tk.Button(root, text="2 - Loot Assistant (buff/loot)", width=30, command=self.show_loot)
         btn_loot.pack(pady=5)
 
@@ -48,6 +52,12 @@ class DBOBotApp:
             messagebox.showinfo("DBO Bot", "Bot started: Farm Whitestones")
         else:
             messagebox.showinfo("DBO Bot", "Bot is already running.")
+
+    def start_farm_no_lp(self):
+        self.bot = BotWhiteStonesNoLp()
+        self.bot.start()
+        messagebox.showinfo("DBO Bot", "Función Farm Whitestones (sin control LP) iniciada.")
+
 
     def show_loot(self):
         time.sleep(5)
